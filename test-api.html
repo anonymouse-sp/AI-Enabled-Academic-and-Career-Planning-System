@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Test</title>
+</head>
+<body>
+    <h1>Application Submission Test</h1>
+    <button onclick="testSubmission()">Test API</button>
+    <div id="result"></div>
+
+    <script>
+        async function testSubmission() {
+            try {
+                const token = prompt('Enter your JWT token:');
+                
+                const testData = {
+                    firstName: 'Test',
+                    lastName: 'User',
+                    email: 'test@example.com',
+                    phone: '1234567890',
+                    dateOfBirth: '1990-01-01',
+                    gender: 'Male',
+                    nationality: 'Indian',
+                    currentEducation: 'Bachelor',
+                    institution: 'Test College',
+                    percentage: 85,
+                    graduationYear: 2023,
+                    preferredCourse: 'Computer Science',
+                    statement: 'Test statement',
+                    collegeId: 'test123',
+                    collegeName: 'Test College',
+                    applicationDate: new Date().toISOString(),
+                    status: 'pending'
+                };
+
+                const response = await fetch('http://localhost:5001/api/applications/submit', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(testData)
+                });
+
+                const result = await response.text();
+                document.getElementById('result').innerHTML = `
+                    <h3>Response Status: ${response.status}</h3>
+                    <pre>${result}</pre>
+                `;
+
+                console.log('Response:', response);
+                console.log('Result:', result);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('result').innerHTML = `
+                    <h3>Error:</h3>
+                    <pre>${error.message}</pre>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

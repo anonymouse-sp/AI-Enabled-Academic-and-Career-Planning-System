@@ -1,0 +1,14 @@
+name: college-finder-ai-service
+version: '1.0'
+description: AI service for college and career recommendations
+dependencies:
+  - python=3.9
+  - scikit-learn
+  - tensorflow
+  - pandas
+  - numpy
+  - flask
+  - pymongo
+  - python-dotenv
+  - pip:
+    - flask-cors

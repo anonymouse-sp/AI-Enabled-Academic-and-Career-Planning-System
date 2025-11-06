@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Application Count</title>
+</head>
+<body>
+    <h1>Application Count Test</h1>
+    <div id="results"></div>
+    
+    <script>
+        async function testApplicationCount() {
+            const baseURL = 'http://localhost:5000';
+            const results = document.getElementById('results');
+            
+            try {
+                results.innerHTML += '<p>🔄 Testing student application count...</p>';
+                
+                // Login as student
+                const loginResponse = await fetch(`${baseURL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: 'surya@gmail.com',
+                        password: 'password123',
+                        expectedRole: 'student'
+                    })
+                });
+
+                if (!loginResponse.ok) {
+                    results.innerHTML += '<p>❌ Student login failed</p>';
+                    return;
+                }
+
+                const loginData = await loginResponse.json();
+                const token = loginData.token;
+                results.innerHTML += '<p>✅ Student login successful</p>';
+
+                // Get dashboard stats
+                const dashboardResponse = await fetch(`${baseURL}/api/dashboard/stats`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (dashboardResponse.ok) {
+                    const data = await dashboardResponse.json();
+                    results.innerHTML += '<h2>📊 Dashboard Stats:</h2>';
+                    results.innerHTML += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                    results.innerHTML += `<h3>🎯 My Applications Count: ${data.totalApplications || data.pendingQueries || 0}</h3>`;
+                } else {
+                    results.innerHTML += '<p>❌ Failed to fetch dashboard stats</p>';
+                }
+
+                // Get actual applications
+                const applicationsResponse = await fetch(`${baseURL}/api/applications/my-applications`, {
+                    headers: { 
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (applicationsResponse.ok) {
+                    const appData = await applicationsResponse.json();
+                    results.innerHTML += '<h2>📋 Actual Applications:</h2>';
+                    results.innerHTML += `<p>🔢 Count: ${appData.total || appData.applications?.length || 0}</p>`;
+                    results.innerHTML += `<pre>${JSON.stringify(appData, null, 2)}</pre>`;
+                }
+
+            } catch (error) {
+                results.innerHTML += `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Run test when page loads
+        testApplicationCount();
+    </script>
+</body>
+</html>
